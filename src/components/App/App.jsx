@@ -1,26 +1,22 @@
 import { Searchbar } from '../Searchbar/Searchbar';
 import { RotatingSquare } from 'react-loader-spinner';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
+import { Button } from '../Button/Button';
 import { Component } from 'react';
 import { getFromApi } from '../../api/api';
+import { Modal } from 'components/Modal/Modal';
 //import axios from 'axios';
-//import { Modal } from '../Modal/Modal';
+
 class App extends Component {
   state = {
     page: 1,
     pictures: {},
     loader: false,
     loaderMore: false,
+    totalPictures: null,
+    error: '',
+    modalId: null,
   };
-
-  //  componentDidUpdate(_, prevState) {
-  //    if (prevState.pictures !== this.state.pictures) {
-  //      this.setState({
-  //        loader: false,
-  //        loaderMore: false,
-  //      });
-  //    }
-  //  }
 
   sendSearchToApi = async ({ searchWord }) => {
     try {
@@ -29,16 +25,17 @@ class App extends Component {
         loader: true,
       });
 
-      const { hits } = await getFromApi(searchWord, this.state.page);
-
+      const { hits, totalHits } = await getFromApi(searchWord, this.state.page);
+      console.log(hits);
+      console.log(totalHits);
       this.setState({
         pictures: [...hits],
+        totalPictures: totalHits,
       });
-
-      //  this.setState({
-      //    loader: false,
-      //  });
     } catch (error) {
+      this.setState({
+        error: error.message,
+      });
     } finally {
       this.setState({
         loader: false,
@@ -57,10 +54,6 @@ class App extends Component {
         this.state.page + 1
       );
 
-      //  this.setState({
-      //    loaderMore: false,
-      //  });
-
       this.setState(prevstate => {
         return {
           page: prevstate.page + 1,
@@ -68,18 +61,27 @@ class App extends Component {
         };
       });
     } catch (error) {
+      console.log(error);
     } finally {
       this.setState({
         loaderMore: false,
       });
     }
   };
+  modalOn = id => {
+    this.setState({
+      modalId: id,
+    });
+  };
 
   render() {
+    const { error, loader, totalPictures, loaderMore, pictures, modalId } =
+      this.state;
     return (
       <>
         <Searchbar handleSearch={this.sendSearchToApi}></Searchbar>
-        {this.state.loader && (
+        {error && <h3>{error}</h3>}
+        {loader && (
           <RotatingSquare
             ariaLabel="rotating-square"
             visible={true}
@@ -87,10 +89,13 @@ class App extends Component {
             strokeWidth="10"
           />
         )}
-        {this.state.pictures.length > 0 && (
+        {totalPictures && (
           <>
-            <ImageGallery pictures={this.state.pictures}></ImageGallery>
-            {this.state.loaderMore && (
+            <ImageGallery
+              pictures={pictures}
+              clickOnImage={this.modalOn}
+            ></ImageGallery>
+            {loaderMore && (
               <RotatingSquare
                 ariaLabel="rotating-square"
                 visible={true}
@@ -98,15 +103,12 @@ class App extends Component {
                 strokeWidth="10"
               />
             )}
-            {this.state.pictures.length > 0 && (
-              <button type="button" onClick={this.btnLoadMore}>
-                Click Me!
-              </button>
+            {totalPictures - pictures.length > 1 && (
+              <Button clickOnMoreBtn={this.btnLoadMore}></Button>
             )}
+            {modalId && <Modal id={modalId}></Modal>}
           </>
         )}
-
-        {/*<Modal></Modal>*/}
       </>
     );
   }

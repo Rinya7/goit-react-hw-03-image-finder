@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {
   ImageGalleryItemLi,
   ImageGalleryItemImg,
@@ -17,4 +18,11 @@ export const ImageGalleryItem = ({
       />
     </ImageGalleryItemLi>
   );
+};
+
+ImageGalleryItem.propTypes = {
+  tags: PropTypes.string.isRequired,
+  webformatURL: PropTypes.string.isRequired,
+  clickOnImage: PropTypes.func,
+  largeImageURL: PropTypes.string.isRequired,
 };

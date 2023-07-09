@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { ModalCss, Overlay } from './Modal.styled';
 
@@ -34,3 +35,8 @@ class Modal extends Component {
 }
 
 export { Modal };
+
+Modal.propTypes = {
+  handelKeyDown: PropTypes.func,
+  handleClickOnBackdrop: PropTypes.func,
+};

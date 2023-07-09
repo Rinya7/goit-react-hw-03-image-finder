@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import {
   SearchbarCss,
   SearchForm,
@@ -50,3 +51,9 @@ class Searchbar extends Component {
 }
 
 export { Searchbar };
+
+Searchbar.propTypes = {
+  handleInputSearch: PropTypes.func,
+  hundelSearchSubmit: PropTypes.func,
+  handleSearch: PropTypes.func,
+};

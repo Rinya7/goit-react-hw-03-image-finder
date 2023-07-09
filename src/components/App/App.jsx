@@ -1,5 +1,6 @@
+import { AppCss } from './App.styled';
 import { Searchbar } from '../Searchbar/Searchbar';
-import { RotatingSquare } from 'react-loader-spinner';
+import { Loader } from '../Loader/Loader';
 import { ImageGallery } from '../ImageGallery/ImageGallery';
 import { Button } from '../Button/Button';
 import { Component } from 'react';
@@ -23,10 +24,6 @@ class App extends Component {
   componentDidUpdate = (_, prevState) => {
     const { searchWord, page } = this.state;
 
-    console.log(prevState.searchWord);
-    console.log(prevState.page);
-    console.log(searchWord);
-    console.log(page);
     if (prevState.searchWord !== searchWord || prevState.page !== page) {
       this.sendSearchToApi(searchWord, page);
     }
@@ -49,10 +46,7 @@ class App extends Component {
     });
     try {
       const { hits, totalHits } = await getFromApi(searchWord, page);
-      console.log('hits', hits);
-      console.log('totalHits', totalHits);
-      console.log('hits.length', hits.length);
-      console.log('this.state.isEmpty', this.state.isEmpty);
+
       if (hits.length === 0) {
         this.setState({
           isEmpty: true,
@@ -94,20 +88,13 @@ class App extends Component {
       isEmpty,
       imageModal,
     } = this.state;
-    console.log('totalPictures:', totalPictures);
+
     return (
-      <>
+      <AppCss>
         <Searchbar handleSearch={this.sendSearchSubmit}></Searchbar>
         {isEmpty && <p>Sorry. There are no pictures</p>}
         {error && <h3>{error}</h3>}
-        {loader && (
-          <RotatingSquare
-            ariaLabel="rotating-square"
-            visible={true}
-            color="grey"
-            strokeWidth="10"
-          />
-        )}
+        {loader && <Loader />}
 
         {pictures.length > 0 && (
           <>
@@ -115,14 +102,7 @@ class App extends Component {
               pictures={pictures}
               clickOnImage={this.modalOn}
             ></ImageGallery>
-            {loaderMore && (
-              <RotatingSquare
-                ariaLabel="rotating-square"
-                visible={true}
-                color="grey"
-                strokeWidth="10"
-              />
-            )}
+            {loaderMore && <Loader />}
             {totalPictures - pictures.length > 1 ? (
               <Button clickOnMoreBtn={this.btnLoadMore}></Button>
             ) : (
@@ -131,7 +111,7 @@ class App extends Component {
             {imageModal && <Modal imageUrl={imageModal}></Modal>}
           </>
         )}
-      </>
+      </AppCss>
     );
   }
 }

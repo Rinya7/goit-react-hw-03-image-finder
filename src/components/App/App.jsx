@@ -19,6 +19,7 @@ class App extends Component {
     pictures: [],
     modalId: null,
     isEmpty: false,
+    modal: null,
   };
 
   componentDidUpdate = (_, prevState) => {
@@ -75,6 +76,12 @@ class App extends Component {
   modalOn = imageUrl => {
     this.setState({
       imageModal: imageUrl,
+      modal: true,
+    });
+  };
+  closeModal = modal => {
+    this.setState({
+      modal: false,
     });
   };
 
@@ -87,6 +94,7 @@ class App extends Component {
       pictures,
       isEmpty,
       imageModal,
+      modal,
     } = this.state;
 
     return (
@@ -108,7 +116,11 @@ class App extends Component {
             ) : (
               <p>Sorry. There are no pictures</p>
             )}
-            {imageModal && <Modal imageUrl={imageModal}></Modal>}
+            {modal && (
+              <Modal closeModal={this.closeModal}>
+                <img src={imageModal} alt="Big pictures" />
+              </Modal>
+            )}
           </>
         )}
       </AppCss>

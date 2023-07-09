@@ -10,28 +10,58 @@ import { Modal } from 'components/Modal/Modal';
 class App extends Component {
   state = {
     page: 1,
-    pictures: {},
+    searchWord: '',
     loader: false,
     loaderMore: false,
     totalPictures: null,
-    error: '',
+    error: null,
+    pictures: [],
     modalId: null,
+    isEmpty: false,
   };
 
-  sendSearchToApi = async ({ searchWord }) => {
-    try {
-      this.setState({
-        searchWord: searchWord,
-        loader: true,
-      });
+  componentDidUpdate = (_, prevState) => {
+    const { searchWord, page } = this.state;
 
-      const { hits, totalHits } = await getFromApi(searchWord, this.state.page);
-      console.log(hits);
-      console.log(totalHits);
-      this.setState({
-        pictures: [...hits],
+    console.log(prevState.searchWord);
+    console.log(prevState.page);
+    console.log(searchWord);
+    console.log(page);
+    if (prevState.searchWord !== searchWord || prevState.page !== page) {
+      this.sendSearchToApi(searchWord, page);
+    }
+  };
+
+  sendSearchSubmit = ({ searchWord }) => {
+    this.setState({
+      searchWord: searchWord,
+      page: 1,
+      pictures: [],
+    });
+  };
+
+  sendSearchToApi = async (searchWord, page) => {
+    if (!searchWord) {
+      return;
+    }
+    this.setState({
+      loader: true,
+    });
+    try {
+      const { hits, totalHits } = await getFromApi(searchWord, page);
+      console.log('hits', hits);
+      console.log('totalHits', totalHits);
+      console.log('hits.length', hits.length);
+      console.log('this.state.isEmpty', this.state.isEmpty);
+      if (hits.length === 0) {
+        this.setState({
+          isEmpty: true,
+        });
+      }
+      this.setState(prevState => ({
+        pictures: [...prevState.pictures, ...hits],
         totalPictures: totalHits,
-      });
+      }));
     } catch (error) {
       this.setState({
         error: error.message,
@@ -43,30 +73,10 @@ class App extends Component {
     }
   };
 
-  btnLoadMore = async () => {
-    try {
-      this.setState({
-        loaderMore: true,
-      });
-
-      const { hits } = await getFromApi(
-        this.state.searchWord,
-        this.state.page + 1
-      );
-
-      this.setState(prevstate => {
-        return {
-          page: prevstate.page + 1,
-          pictures: [...prevstate.pictures, ...hits],
-        };
-      });
-    } catch (error) {
-      console.log(error);
-    } finally {
-      this.setState({
-        loaderMore: false,
-      });
-    }
+  btnLoadMore = () => {
+    this.setState(prevstate => ({
+      page: prevstate.page + 1,
+    }));
   };
   modalOn = id => {
     this.setState({
@@ -75,11 +85,20 @@ class App extends Component {
   };
 
   render() {
-    const { error, loader, totalPictures, loaderMore, pictures, modalId } =
-      this.state;
+    const {
+      error,
+      loader,
+      totalPictures,
+      loaderMore,
+      pictures,
+      isEmpty,
+      modalId,
+    } = this.state;
+    console.log('totalPictures:', totalPictures);
     return (
       <>
-        <Searchbar handleSearch={this.sendSearchToApi}></Searchbar>
+        <Searchbar handleSearch={this.sendSearchSubmit}></Searchbar>
+        {isEmpty && <p>Sorry. There are no pictures</p>}
         {error && <h3>{error}</h3>}
         {loader && (
           <RotatingSquare
@@ -89,7 +108,8 @@ class App extends Component {
             strokeWidth="10"
           />
         )}
-        {totalPictures && (
+
+        {pictures.length > 0 && (
           <>
             <ImageGallery
               pictures={pictures}
@@ -103,8 +123,10 @@ class App extends Component {
                 strokeWidth="10"
               />
             )}
-            {totalPictures - pictures.length > 1 && (
+            {totalPictures - pictures.length > 1 ? (
               <Button clickOnMoreBtn={this.btnLoadMore}></Button>
+            ) : (
+              <p>Sorry. There are no pictures</p>
             )}
             {modalId && <Modal id={modalId}></Modal>}
           </>

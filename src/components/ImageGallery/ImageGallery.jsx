@@ -5,16 +5,13 @@ export const ImageGallery = ({ pictures, clickOnImage }) => {
   return (
     <ImageGalleryUl>
       {pictures.map(({ id, tags, webformatURL, largeImageURL }) => (
-        <a
-          href={largeImageURL}
-          onClick={() => clickOnImage(largeImageURL)}
+        <ImageGalleryItem
           key={id}
-        >
-          <ImageGalleryItem
-            tags={tags}
-            webformatURL={webformatURL}
-          ></ImageGalleryItem>
-        </a>
+          tags={tags}
+          webformatURL={webformatURL}
+          largeImageURL={largeImageURL}
+          clickOnImage={clickOnImage}
+        ></ImageGalleryItem>
       ))}
     </ImageGalleryUl>
   );

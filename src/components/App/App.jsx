@@ -78,9 +78,9 @@ class App extends Component {
       page: prevstate.page + 1,
     }));
   };
-  modalOn = id => {
+  modalOn = imageUrl => {
     this.setState({
-      modalId: id,
+      imageModal: imageUrl,
     });
   };
 
@@ -92,7 +92,7 @@ class App extends Component {
       loaderMore,
       pictures,
       isEmpty,
-      modalId,
+      imageModal,
     } = this.state;
     console.log('totalPictures:', totalPictures);
     return (
@@ -128,7 +128,7 @@ class App extends Component {
             ) : (
               <p>Sorry. There are no pictures</p>
             )}
-            {modalId && <Modal id={modalId}></Modal>}
+            {imageModal && <Modal imageUrl={imageModal}></Modal>}
           </>
         )}
       </>

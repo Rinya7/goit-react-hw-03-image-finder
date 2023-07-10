@@ -17,7 +17,7 @@ class App extends Component {
     totalPictures: null,
     error: null,
     pictures: [],
-    modalId: null,
+    imageModal: null,
     isEmpty: false,
     modal: null,
   };
@@ -35,6 +35,7 @@ class App extends Component {
       searchWord: searchWord,
       page: 1,
       pictures: [],
+      isEmpty: false,
     });
   };
 

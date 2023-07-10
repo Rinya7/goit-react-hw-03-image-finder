@@ -7,15 +7,14 @@ class Modal extends Component {
     modal: true,
   };
 
-  handelKeyDown() {
-    window.addEventListener('keydown', e => {
-      if (e.code === 'Escape') {
-        this.props.closeModal();
-      }
-    });
-  }
+  handelKeyDown = e => {
+    if (e.code === 'Escape') {
+      this.props.closeModal();
+    }
+  };
+
   componentDidMount() {
-    this.handelKeyDown();
+    window.addEventListener('keydown', this.handelKeyDown);
   }
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handelKeyDown);
@@ -37,6 +36,6 @@ class Modal extends Component {
 export { Modal };
 
 Modal.propTypes = {
-  handelKeyDown: PropTypes.func,
-  handleClickOnBackdrop: PropTypes.func,
+  closeModal: PropTypes.func,
+  children: PropTypes.node,
 };

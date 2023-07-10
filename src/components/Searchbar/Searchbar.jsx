@@ -20,7 +20,11 @@ class Searchbar extends Component {
     });
   };
   hundelSearchSubmit = evt => {
+    const { searchWord } = this.state;
     evt.preventDefault();
+    if (searchWord.trim() === '') {
+      return alert('Input what you search');
+    }
     this.props.handleSearch(this.state);
 
     this.setState({
@@ -53,7 +57,5 @@ class Searchbar extends Component {
 export { Searchbar };
 
 Searchbar.propTypes = {
-  handleInputSearch: PropTypes.func,
-  hundelSearchSubmit: PropTypes.func,
   handleSearch: PropTypes.func,
 };
